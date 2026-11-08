@@ -1,18 +1,623 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mojmír Dočekal — Masaryk University</title>
+  <meta name="description" content="doc. PhDr. Mojmír Dočekal, Ph.D. — Associate Professor at the Department of Linguistics and Baltic Languages, Masaryk University, Brno.">
+  <meta property="og:title" content="Mojmír Dočekal — Academic Profile">
+  <meta property="og:description" content="Associate Professor of Linguistics at Masaryk University (Brno). Formal & experimental semantics, syntax.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mojmirdocekal.github.io">
 
-<div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --surface-border: #e4e4e7;
+      --text: #18181b;
+      --text-muted: #71717a;
+      --accent: #1d4ed8;
+      --accent-hover: #1e40af;
+      --card-bg: #ffffff;
+      --card-hover-border: #a1a1aa;
+      --code-bg: #f4f4f5;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.05);
+    }
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f1115;
+        --surface: #16181d;
+        --surface-border: #272a30;
+        --text: #f4f4f5;
+        --text-muted: #9ca3af;
+        --accent: #60a5fa;
+        --accent-hover: #93c5fd;
+        --card-bg: #16181d;
+        --card-hover-border: #4b5563;
+        --code-bg: #1f232b;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+      }
+    }
 
-      <div class="entry">
-        {{ post.excerpt }}
+    :root[data-theme="dark"] {
+      --bg: #0f1115;
+      --surface: #16181d;
+      --surface-border: #272a30;
+      --text: #f4f4f5;
+      --text-muted: #9ca3af;
+      --accent: #60a5fa;
+      --accent-hover: #93c5fd;
+      --card-bg: #16181d;
+      --card-hover-border: #4b5563;
+      --code-bg: #1f232b;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.4rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+    .theme-toggle:hover {
+      color: var(--text);
+      border-color: var(--card-hover-border);
+    }
+
+    /* Header */
+    header {
+      margin-bottom: 2.5rem;
+    }
+
+    .profile-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 20%;
+      border: 2px solid var(--surface-border);
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 520px) {
+      .profile-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+      }
+      .profile-avatar {
+        width: 96px;
+        height: 96px;
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 0.35rem;
+    }
+
+    .titles {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .affiliation {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .affiliation a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--surface-border);
+      text-underline-offset: 3px;
+    }
+    .affiliation a:hover {
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+    }
+
+    /* Bio / intro */
+    .bio {
+      margin-top: 1.25rem;
+      font-size: 1.025rem;
+      color: var(--text);
+    }
+
+    /* Main Section: The Principal Links */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+
+    .main-links {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 2.75rem;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.25rem;
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .link-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .link-card-content {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .link-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .link-card:hover .link-card-title {
+      color: var(--accent);
+    }
+
+    .link-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .link-card-arrow {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      transition: transform 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    .link-card:hover .link-card-arrow {
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* Secondary Links / Profiles */
+    .meta-section {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.75rem;
+      border-top: 1px solid var(--surface-border);
+      padding-top: 2rem;
+    }
+
+    @media (min-width: 580px) {
+      .meta-section {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .meta-block h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .meta-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .meta-list li {
+      font-size: 0.925rem;
+    }
+
+    .meta-list a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .meta-list a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .contact-item {
+      font-size: 0.925rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .contact-item a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .contact-item a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* Hidden / Toy Projects Section */
+    .toy-zone {
+      margin-top: 1.5rem;
+      border-top: 1px dashed var(--surface-border);
+      padding-top: 1.75rem;
+    }
+
+    .toy-toggle-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .toy-toggle-btn:hover {
+      color: var(--text);
+      background: var(--code-bg);
+      border-color: var(--surface-border);
+    }
+
+    .toy-icon {
+      font-size: 1rem;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .toy-toggle-btn:hover .toy-icon {
+      transform: rotate(20deg) scale(1.1);
+    }
+
+    .toy-drawer {
+      display: none;
+      margin-top: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .toy-drawer.open {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toy-drawer h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .toy-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toy-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .toy-link {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .toy-link:hover {
+      text-decoration: underline;
+    }
+
+    .toy-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    footer a {
+      color: inherit;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+        <span id="themeIcon">🌓</span>
+        <span id="themeLabel">Theme</span>
+      </button>
+    </div>
+
+    <header>
+      <div class="profile-wrap">
+        <img class="profile-avatar" src="images/profile.jpg" alt="Mojmír Dočekal" width="110" height="110">
+        <div>
+          <h1>Mojmír Dočekal</h1>
+          <div class="titles">doc. PhDr. Mojmír Dočekal, Ph.D. · Associate Professor</div>
+          <div class="affiliation">
+            <a href="https://www.phil.muni.cz/jazyk" target="_blank" rel="noopener">Department of Linguistics and Baltic Languages</a><br>
+            Faculty of Arts, <a href="https://www.muni.cz" target="_blank" rel="noopener">Masaryk University</a>, Brno
+          </div>
+        </div>
+      </div>
+      <p class="bio">
+        Linguist focusing on formal and experimental semantics, syntax, and the semantics-pragmatics interface.
+      </p>
+    </header>
+
+    <main>
+      <div class="section-label">Academic Hub</div>
+      <div class="main-links">
+        <a class="link-card" href="https://scholar.google.com/citations?user=9fcboJ4AAAAJ&hl=cs" target="_blank" rel="noopener">
+          <div class="link-card-content">
+            <span class="link-card-title">Publications</span>
+            <span class="link-card-desc">Google Scholar &amp; citation metrics</span>
+          </div>
+          <span class="link-card-arrow">→</span>
+        </a>
+
+        <a class="link-card" href="https://www.muni.cz/lide/15952-mojmir-docekal/projekty" target="_blank" rel="noopener">
+          <div class="link-card-content">
+            <span class="link-card-title">Projects</span>
+            <span class="link-card-desc">Research grants &amp; ongoing projects (MUNI)</span>
+          </div>
+          <span class="link-card-arrow">→</span>
+        </a>
+
+        <a class="link-card" href="https://www.muni.cz/lide/15952-mojmir-docekal/vyuka" target="_blank" rel="noopener">
+          <div class="link-card-content">
+            <span class="link-card-title">Teaching</span>
+            <span class="link-card-desc">Current courses, seminars &amp; syllabi (MUNI)</span>
+          </div>
+          <span class="link-card-arrow">→</span>
+        </a>
       </div>
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
-  {% endfor %}
-</div>
+      <div class="meta-section">
+        <div class="meta-block">
+          <h3>Profiles &amp; Records</h3>
+          <ul class="meta-list">
+            <li>
+              <a href="https://www.muni.cz/lide/15952-mojmir-docekal" target="_blank" rel="noopener">
+                MUNI Institutional Profile
+              </a>
+            </li>
+            <li>
+              <a href="https://orcid.org/0000-0002-9993-4756" target="_blank" rel="noopener">
+                ORCID: 0000-0002-9993-4756
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/mojmirDocekal/sandbox2026" target="_blank" rel="noopener">
+                Slides &amp; Materials (sandbox2026)
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/mojmirdocekal" target="_blank" rel="noopener">
+                GitHub: @mojmirdocekal
+              </a>
+            </li>
+            <li>
+              <a href="publications.bib" download="mojmir-docekal-publications.bib">
+                BibTeX Archive (.bib)
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="meta-block">
+          <h3>Contact</h3>
+          <div class="contact-item">
+            <strong>Email:</strong> <a href="mailto:docekal@phil.muni.cz">docekal@phil.muni.cz</a><br>
+            <strong>Office:</strong> Department of Linguistics and Baltic Languages<br>
+            Arna Nováka 1/1, Building A<br>
+            602 00 Brno, Czech Republic
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden / Toy Projects Section -->
+      <section class="toy-zone" id="toys">
+        <button class="toy-toggle-btn" id="toyToggle" type="button" aria-expanded="false">
+          <span class="toy-icon">🎲</span>
+          <span>Sandbox &amp; Toy Projects</span>
+          <span id="toyArrow">▾</span>
+        </button>
+
+        <div class="toy-drawer" id="toyDrawer">
+          <h4>Playground &amp; Little Experiments</h4>
+          <ul class="toy-list">
+            <li class="toy-item">
+              <a class="toy-link" href="https://github.com/mojmirDocekal/sandbox2026" target="_blank" rel="noopener">
+                sandbox2026 (GitHub) ↗
+              </a>
+              <span class="toy-desc">Current sandbox repository with presentation slides, course materials, and notes.</span>
+            </li>
+            <li class="toy-item">
+              <a class="toy-link" href="https://mojmirdocekal.github.io/pig-dice-game/" target="_blank" rel="noopener">
+                Pig Dice Game ↗
+              </a>
+              <span class="toy-desc">A classic two-player dice game of risk, greed, and luck implemented in JavaScript.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Mojmír Dočekal · Masaryk University</span>
+      <a href="#">Back to top ↑</a>
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle logic (system preference + localStorage override)
+    const toggleBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const root = document.documentElement;
+
+    function getPreferredTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+      } else {
+        root.setAttribute('data-theme', 'light');
+        themeIcon.textContent = '🌙';
+      }
+    }
+
+    let currentTheme = getPreferredTheme();
+    applyTheme(currentTheme);
+
+    toggleBtn.addEventListener('click', () => {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', currentTheme);
+      applyTheme(currentTheme);
+    });
+
+    // Toy projects drawer logic (toggle + auto-open if #toys in URL)
+    const toyToggle = document.getElementById('toyToggle');
+    const toyDrawer = document.getElementById('toyDrawer');
+    const toyArrow = document.getElementById('toyArrow');
+
+    function toggleToys(open) {
+      const isOpen = open !== undefined ? open : !toyDrawer.classList.contains('open');
+      toyDrawer.classList.toggle('open', isOpen);
+      toyToggle.setAttribute('aria-expanded', isOpen);
+      toyArrow.textContent = isOpen ? '▴' : '▾';
+    }
+
+    toyToggle.addEventListener('click', () => toggleToys());
+
+    if (window.location.hash === '#toys' || window.location.hash === '#sandbox') {
+      toggleToys(true);
+      setTimeout(() => {
+        toyDrawer.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  </script>
+</body>
+</html>

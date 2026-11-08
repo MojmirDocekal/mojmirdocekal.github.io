@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — Page Not Found · Mojmír Dočekal</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --text: #18181b;
+      --text-muted: #71717a;
+      --accent: #1d4ed8;
+      --card-bg: #ffffff;
+      --surface-border: #e4e4e7;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1115;
+        --text: #f4f4f5;
+        --text-muted: #9ca3af;
+        --accent: #60a5fa;
+        --card-bg: #16181d;
+        --surface-border: #272a30;
+      }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .box {
+      max-width: 440px;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+    }
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 0.5rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    a {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    a:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>404</h1>
+    <p>Sorry, the page you are looking for could not be found.</p>
+    <a href="/">← Return to Homepage</a>
+  </div>
+</body>
+</html>
+
