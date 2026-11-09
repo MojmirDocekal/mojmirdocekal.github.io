@@ -1,6 +1,6 @@
 # mojmirdocekal.github.io
 
-Personal academic hub for **doc. PhDr. Mojmír Dočekal, Ph.D.** (Associate Professor at the Department of Linguistics and Baltic Languages, Masaryk University, Brno).
+Personal academic hub for **Mojmír Dočekal** (Associate Professor at the Department of Linguistics and Baltic Languages, Masaryk University, Brno).
 
 Hosted via [GitHub Pages](https://mojmirdocekal.github.io).
 
