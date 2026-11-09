@@ -449,6 +449,156 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    /* ---- Publications as Markdown dialog ---- */
+    #pubMdDialog {
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0;
+      width: min(760px, 94vw);
+      max-height: 86vh;
+      box-shadow: var(--shadow-md);
+    }
+
+    #pubMdDialog::backdrop {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .md-modal {
+      display: flex;
+      flex-direction: column;
+      padding: 18px 20px;
+    }
+
+    .md-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .md-head h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      flex: 1;
+    }
+
+    .md-meta {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .md-close {
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .md-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0 10px;
+    }
+
+    .md-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .md-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .md-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .md-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .md-btn {
+      border: 1px solid var(--surface-border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .md-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .md-preview {
+      overflow-y: auto;
+      min-height: 200px;
+      max-height: calc(86vh - 150px);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      padding-right: 6px;
+    }
+
+    .md-preview h2 {
+      font-size: 1.15rem;
+      margin: 6px 0 10px;
+    }
+
+    .md-preview h3 {
+      font-size: 1rem;
+      margin: 16px 0 6px;
+      color: var(--accent);
+    }
+
+    .md-preview ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .md-preview li {
+      margin-bottom: 8px;
+    }
+
+    .md-preview a {
+      color: var(--accent);
+    }
+
+    .md-raw {
+      overflow-y: auto;
+      min-height: 200px;
+      max-height: calc(86vh - 150px);
+      margin: 0;
+      background: var(--code-bg);
+      border-radius: 10px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   </style>
 </head>
 
@@ -539,6 +689,11 @@
                 BibTeX Archive (.bib)
               </a>
             </li>
+            <li>
+              <a href="#" id="pub-md-link" title="Generate a Markdown publication list from publications.bib">
+                Publications as Markdown
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -596,6 +751,28 @@
     </footer>
   </div>
 
+  <dialog id="pubMdDialog" aria-label="Publications as Markdown">
+    <div class="md-modal">
+      <div class="md-head">
+        <h3>Publications — Markdown</h3>
+        <span id="pubMdMeta" class="md-meta"></span>
+        <button id="pubMdClose" class="md-close" aria-label="Close">×</button>
+      </div>
+      <div class="md-toolbar">
+        <div class="md-tabs" role="tablist">
+          <button id="pubMdTabPreview" class="md-tab active" type="button">Preview</button>
+          <button id="pubMdTabRaw" class="md-tab" type="button">Markdown</button>
+        </div>
+        <div class="md-actions">
+          <button id="pubMdCopy" class="md-btn" type="button">Copy Markdown</button>
+          <button id="pubMdDl" class="md-btn" type="button">Download .md</button>
+        </div>
+      </div>
+      <div id="pubMdPreview" class="md-preview"></div>
+      <pre id="pubMdRaw" class="md-raw" hidden></pre>
+    </div>
+  </dialog>
+
   <script>
     // Theme toggle logic (system preference + localStorage override)
     const toggleBtn = document.getElementById('themeToggle');
@@ -647,6 +824,265 @@
         toyDrawer.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
+
+    // ---- Publications as Markdown (generated live from publications.bib) ----
+    (function () {
+      const dialog = document.getElementById('pubMdDialog');
+      if (!dialog) return;
+      const link = document.getElementById('pub-md-link');
+      const previewEl = document.getElementById('pubMdPreview');
+      const rawEl = document.getElementById('pubMdRaw');
+      const metaEl = document.getElementById('pubMdMeta');
+      const copyBtn = document.getElementById('pubMdCopy');
+      const dlBtn = document.getElementById('pubMdDl');
+      const tabPreview = document.getElementById('pubMdTabPreview');
+      const tabRaw = document.getElementById('pubMdTabRaw');
+      let cache = null;
+
+      const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+      const pages = (s) => clean(s).replace(/\s*-\s*/g, '\u2013');
+
+      function parseBibtex(text) {
+        const entries = [];
+        let i = 0;
+        const n = text.length;
+        while (i < n) {
+          const at = text.indexOf('@', i);
+          if (at === -1) break;
+          let j = at + 1;
+          while (j < n && /[A-Za-z]/.test(text[j])) j++;
+          const type = text.slice(at + 1, j).toLowerCase();
+          while (j < n && /\s/.test(text[j])) j++;
+          if (text[j] !== '{') { i = at + 1; continue; }
+          j++;
+          const k = text.indexOf(',', j);
+          if (k === -1) break;
+          const key = text.slice(j, k).trim();
+          j = k + 1;
+          const fields = {};
+          while (j < n) {
+            while (j < n && /[\s,]/.test(text[j])) j++;
+            if (j >= n) break;
+            if (text[j] === '}') { j++; break; }
+            const m = /^[A-Za-z_-]+/.exec(text.slice(j));
+            if (!m) { j++; continue; }
+            const name = m[0].toLowerCase();
+            j += m[0].length;
+            while (j < n && /[\s=]/.test(text[j])) j++;
+            let val = '';
+            if (text[j] === '{') {
+              let depth = 0;
+              const start = j;
+              while (j < n) {
+                if (text[j] === '{') depth++;
+                else if (text[j] === '}') { depth--; if (depth === 0) break; }
+                j++;
+              }
+              val = text.slice(start + 1, j);
+              j++;
+            } else if (text[j] === '"') {
+              const start = j;
+              j++;
+              while (j < n && text[j] !== '"') j++;
+              val = text.slice(start + 1, j);
+              j++;
+            } else {
+              const start = j;
+              while (j < n && /[^,}\s]/.test(text[j])) j++;
+              val = text.slice(start, j);
+            }
+            fields[name] = val.replace(/\s+/g, ' ').trim();
+          }
+          entries.push({ type, key, fields });
+          i = j;
+        }
+        return entries;
+      }
+
+      function fmtAuthors(field, cap = 6) {
+        if (!field) return '';
+        let names = field.split(/\s+and\s+/).map((s) => s.trim()).filter(Boolean);
+        if (names.length && names[names.length - 1].toLowerCase() === 'others') {
+          names = names.slice(0, -1).concat(['et al.']);
+        } else if (names.length > cap) {
+          names = names.slice(0, cap).concat(['et al.']);
+        }
+        names = names.map((full) => {
+          if (full === 'et al.') return full;
+          if (full.includes(',')) {
+            const ci = full.indexOf(',');
+            return clean(full.slice(ci + 1)) + ' ' + clean(full.slice(0, ci));
+          }
+          return clean(full);
+        });
+        if (names.length === 1) return names[0];
+        return names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1];
+      }
+
+      function normDoi(d) {
+        d = clean(d);
+        if (!d) return '';
+        if (/^https?:\/\//.test(d)) return d;
+        if (/^10\./.test(d)) return 'https://doi.org/' + d;
+        return '';
+      }
+
+      function fmtEntry(e) {
+        const f = e.fields;
+        const parts = [];
+        const a = fmtAuthors(f.author);
+        if (a) parts.push(a);
+        parts.push('(' + (f.year || 'n.d.') + ').');
+        const title = clean(f.title);
+        if (e.type === 'book') parts.push('*' + title + '.*');
+        else parts.push('\u201c' + title + '.\u201d');
+        if (e.type === 'article' && f.journal) {
+          let v = '*' + clean(f.journal) + '*';
+          if (f.volume) v += ', vol. ' + clean(f.volume);
+          if (f.pages) v += ', pp. ' + pages(f.pages);
+          else if (f.article_number) {
+            v += /^\d+$/.test(clean(f.article_number))
+              ? ', art. ' + clean(f.article_number)
+              : ', pp. ' + pages(f.article_number);
+          }
+          parts.push(v + '.');
+        } else if (f.booktitle) {
+          let v = 'In: *' + clean(f.booktitle) + '*';
+          if (f.pages) v += ', pp. ' + pages(f.pages);
+          parts.push(v + '.');
+          const pub = [clean(f.publisher), clean(f.location || f.address)].filter(Boolean).join(', ');
+          if (pub) parts.push(pub + '.');
+        } else if (f.publisher) {
+          parts.push(clean(f.publisher) + '.');
+        }
+        const doi = normDoi(f.doi);
+        const url = clean(f.url);
+        if (doi) parts.push('[DOI](' + doi + ')');
+        else if (url) parts.push('[link](' + url + ')');
+        return '- ' + parts.join(' ');
+      }
+
+      function generate(entries) {
+        const years = [...new Set(entries.map((e) => +e.fields.year).filter(Boolean))].sort((x, y) => y - x);
+        const lines = [
+          '# Publications \u2014 Mojm\u00edr Do\u010dekal',
+          '',
+          '*Generated from publications.bib \u2014 ' + entries.length + ' entries.*',
+          ''
+        ];
+        for (const y of years) {
+          lines.push('## ' + y, '');
+          for (const e of entries) {
+            if (+e.fields.year === y) lines.push(fmtEntry(e));
+          }
+          lines.push('');
+        }
+        return lines.join('\n');
+      }
+
+      function mdToHtml(md) {
+        const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const inline = (s) => esc(s)
+          .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        const out = [];
+        let inList = false;
+        const closeList = () => { if (inList) { out.push('</ul>'); inList = false; } };
+        for (const line of md.split('\n')) {
+          if (/^## /.test(line)) { closeList(); out.push('<h3>' + inline(line.slice(3)) + '</h3>'); }
+          else if (/^# /.test(line)) { closeList(); out.push('<h2>' + inline(line.slice(2)) + '</h2>'); }
+          else if (/^- /.test(line)) {
+            if (!inList) { out.push('<ul>'); inList = true; }
+            out.push('<li>' + inline(line.slice(2)) + '</li>');
+          }
+          else if (line.trim() === '') closeList();
+          else { closeList(); out.push('<p>' + inline(line) + '</p>'); }
+        }
+        closeList();
+        return out.join('\n');
+      }
+
+      function showTab(preview) {
+        previewEl.hidden = !preview;
+        rawEl.hidden = preview;
+        tabPreview.classList.toggle('active', preview);
+        tabRaw.classList.toggle('active', !preview);
+      }
+
+      async function ensureMarkdown() {
+        if (cache) return cache;
+        const res = await fetch('publications.bib');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const entries = parseBibtex(await res.text());
+        const years = entries.map((e) => +e.fields.year).filter(Boolean);
+        metaEl.textContent = entries.length + ' entries \u00b7 ' +
+          Math.min.apply(null, years) + '\u2013' + Math.max.apply(null, years);
+        cache = generate(entries);
+        return cache;
+      }
+
+      link.addEventListener('click', async function (ev) {
+        ev.preventDefault();
+        if (typeof dialog.showModal !== 'function') {
+          window.open('publications.bib', '_blank');
+          return;
+        }
+        if (!cache) {
+          previewEl.innerHTML = '<p><em>loading publications.bib\u2026</em></p>';
+          rawEl.textContent = 'loading\u2026';
+        }
+        dialog.showModal();
+        try {
+          const md = await ensureMarkdown();
+          rawEl.textContent = md;
+          previewEl.innerHTML = mdToHtml(md);
+        } catch (err) {
+          previewEl.innerHTML = '<p><em>Could not load publications.bib (' + err.message + ').</em></p>';
+          rawEl.textContent = '';
+        }
+        showTab(true);
+      });
+
+      document.getElementById('pubMdClose').addEventListener('click', function () { dialog.close(); });
+      dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
+      tabPreview.addEventListener('click', function () { showTab(true); });
+      tabRaw.addEventListener('click', function () { showTab(false); });
+
+      copyBtn.addEventListener('click', async function () {
+        const md = rawEl.textContent;
+        if (!md || md === 'loading\u2026') return;
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(md);
+          ok = true;
+        } catch (e) {
+          const ta = document.createElement('textarea');
+          ta.value = md;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+          ta.remove();
+        }
+        copyBtn.textContent = ok ? 'Copied \u2713' : 'Copy failed';
+        setTimeout(function () { copyBtn.textContent = 'Copy Markdown'; }, 1500);
+      });
+
+      dlBtn.addEventListener('click', function () {
+        const md = rawEl.textContent;
+        if (!md || md === 'loading\u2026') return;
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'mojmir-docekal-publications.md';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+      });
+    })();
   </script>
 </body>
 
